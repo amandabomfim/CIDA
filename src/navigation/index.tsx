@@ -4,10 +4,10 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { Text, View, StyleSheet } from 'react-native';
 
 import Details from '../screens/details';
-import Overview from '../screens/overview';
+import PaginaInicial from '../screens/PaginaInicial';
 
 export type RootStackParamList = {
-  Overview: undefined;
+  PaginaInicial: undefined;
   Details: { name: string };
 };
 
@@ -16,8 +16,8 @@ const Stack = createStackNavigator<RootStackParamList>();
 export default function RootStack() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Overview">
-        <Stack.Screen name="Overview" component={Overview} />
+      <Stack.Navigator initialRouteName="PaginaInicial">
+        <Stack.Screen name="PaginaInicial" component={PaginaInicial} />
         <Stack.Screen
           name="Details"
           component={Details}
