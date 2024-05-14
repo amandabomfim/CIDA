@@ -25,9 +25,10 @@ export default function PaginaInicial() {
               <Text style={styles.createAccountButtonText}>Criar uma conta</Text>
             </TouchableOpacity>
           </View>
-          <View>
+          <View style={styles.signInContainer} >
+            <Text style={styles.signInText}>Já tem uma conta?</Text>
             <TouchableOpacity>
-              <Text style={styles.signInText}>Já tem uma conta? Entrar</Text>
+              <Text style={styles.signInText}> Entrar</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -86,6 +87,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
     paddingVertical: 15,
+  },
+  signInContainer: {
+    flexDirection: 'row',
   },
   signInText: {
     color: '#fff',
