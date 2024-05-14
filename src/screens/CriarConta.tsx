@@ -1,5 +1,5 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { View, StyleSheet, Text, TextInput,Button } from 'react-native';
+import { View, StyleSheet, Text, TextInput,TouchableOpacity } from 'react-native';
 
 import { RootStackParamList } from '../navigation';
 
@@ -15,29 +15,43 @@ export default function CriarConta() {
           <Text style={styles.tagline}>Consulting Insights With Deep Analysis</Text>
         </View>
     <View style={styles.inputSection}>
-      <Text>Empresa ou Startup:</Text>
+      <Text style = {styles.inputTittle}>Empresa ou Startup:</Text>
       <TextInput
         style={styles.inputField}
         placeholder="Digite o nome da empresa ou Startup..."
       />
+      <Text style = {styles.inputTittle}>E-mail:</Text>
       <TextInput
         style={styles.inputField}
-        placeholder="E-mail"
+        placeholder="Digite seu E-mail..."
       />
+      <Text style = {styles.inputTittle}>CNPJ:</Text>
       <TextInput
         style={styles.inputField}
-        placeholder="CNPJ"
+        placeholder="Digite seu CNPJ..."
       />
+      <Text style = {styles.inputTittle}>Senha:</Text>
       <TextInput
         style={styles.inputField}
-        placeholder="Senha"
+        placeholder="Digite sua senha..."
       />
+      <Text style = {styles.inputTittle}>Confirme sua senha:</Text>
       <TextInput
         style={styles.inputField}
-        placeholder="Confirme sua senha"
+        placeholder="Digite sua senha..."
       />
     </View>
-   
+    <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.createAccountButton}>
+              <Text style={styles.createAccountButtonText}>Criar conta</Text>
+            </TouchableOpacity>
+          </View>
+          <View>
+            <Text>Já tem uma conta?</Text>
+            <TouchableOpacity>
+              <Text style={styles.signInText}>Entrar</Text>
+            </TouchableOpacity>
+          </View>
   </View>
   );
 }
@@ -51,7 +65,6 @@ const styles = StyleSheet.create({
 
   headerContent: {
     alignItems: 'center',
-    paddingTop: 10,
   },
   title: {
     fontSize: 50,
@@ -64,25 +77,41 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   inputSection: {
-    paddingTop: 30
+    paddingTop: 15,
+  },
+  inputTittle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    paddingBottom: 8,
   },
   inputField: {
-    height: 40,
+    height: 48,
     borderColor: '#ccc',
     borderWidth: 1,
     padding: 10,
     marginBottom: 10,
+    borderRadius: 12,
   },
-  buttonSection: {
-    alignItems: 'center',
+  buttonContainer: {
+    width: 355,
+    height: 48,
+    marginTop: 10,
   },
-  createButton: {
+  createAccountButton: {
     backgroundColor: '#000',
-    padding: 10,
-    borderRadius: 5,
-    marginBottom: 10,
+    width: '100%', 
   },
-  loginText: {
+  createAccountButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    textAlign: 'center',
+    paddingVertical: 15,
+  },
+  signInText: {
     color: '#000',
+    fontSize: 16,
+    textAlign:'center',
+    paddingTop:10,
   },
+  
 });
