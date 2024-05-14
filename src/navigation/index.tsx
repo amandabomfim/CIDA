@@ -3,12 +3,12 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Text, View, StyleSheet } from 'react-native';
 
-import Details from '../screens/details';
+import CriarConta from '../screens/CriarConta';
 import PaginaInicial from '../screens/PaginaInicial';
 
 export type RootStackParamList = {
   PaginaInicial: undefined;
-  Details: { name: string };
+  CriarConta: { name: string };
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -19,8 +19,8 @@ export default function RootStack() {
       <Stack.Navigator initialRouteName="PaginaInicial">
         <Stack.Screen name="PaginaInicial" component={PaginaInicial} />
         <Stack.Screen
-          name="Details"
-          component={Details}
+          name="CriarConta"
+          component={CriarConta}
           options={({ navigation }) => ({
             headerLeft: () => (
               <View style={styles.backButton}>
