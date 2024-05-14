@@ -1,12 +1,39 @@
-import { RouteProp, useRoute } from '@react-navigation/native';
-import { View, StyleSheet, Text, TextInput,TouchableOpacity } from 'react-native';
-
+import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
+import { View, StyleSheet, Text, TextInput,TouchableOpacity, Alert } from 'react-native';
+import React, { useState } from 'react';
 import { RootStackParamList } from '../navigation';
+
 
 type CriarContaSreenRouteProp = RouteProp<RootStackParamList, 'CriarConta'>;
 
 export default function CriarConta() {
   const router = useRoute<CriarContaSreenRouteProp>();
+  const navigation = useNavigation();
+
+
+  const [empresa, setEmpresa] = useState('');
+  const [email, setEmail] = useState('');
+  const [cnpj, setCnpj] = useState('');
+  const [senha, setSenha] = useState('');
+  const [confirmarSenha, setConfirmarSenha] = useState('');
+
+  
+  const handleCriarConta = () => {
+    if (!empresa || !email || !cnpj || !senha || !confirmarSenha) {
+      Alert.alert('Por favor, preencha todos os campos.');
+      return;
+    }
+
+    if (!/^\d{14}$/.test(cnpj)) {
+      Alert.alert('O CNPJ deve conter exatamente 14 números.');
+      return;
+    }
+
+    if (senha !== confirmarSenha) {
+      Alert.alert('As senhas não correspondem. Por favor, verifique.');
+      return;
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -19,26 +46,35 @@ export default function CriarConta() {
       <TextInput
         style={styles.inputField}
         placeholder="Digite o nome da empresa ou Startup..."
+        onChangeText={setEmpresa}
       />
       <Text style = {styles.inputTittle}>E-mail:</Text>
       <TextInput
         style={styles.inputField}
         placeholder="Digite seu E-mail..."
+        onChangeText={setEmail}
       />
       <Text style = {styles.inputTittle}>CNPJ:</Text>
       <TextInput
         style={styles.inputField}
         placeholder="Digite seu CNPJ..."
+        onChangeText={setCnpj}
       />
       <Text style = {styles.inputTittle}>Senha:</Text>
       <TextInput
         style={styles.inputField}
         placeholder="Digite sua senha..."
+        value={senha}
+        onChangeText={setSenha}
+        secureTextEntry={true}
       />
       <Text style = {styles.inputTittle}>Confirme sua senha:</Text>
       <TextInput
         style={styles.inputField}
         placeholder="Digite sua senha..."
+        value={confirmarSenha}
+        onChangeText={setConfirmarSenha}
+        secureTextEntry={true}
       />
     </View>
     <View style={styles.buttonContainer}>
@@ -46,10 +82,10 @@ export default function CriarConta() {
               <Text style={styles.createAccountButtonText}>Criar conta</Text>
             </TouchableOpacity>
           </View>
-          <View>
-            <Text>Já tem uma conta?</Text>
+          <View style={styles.signInContainer} >
+            <Text style={styles.signInText}>Já tem uma conta?</Text>
             <TouchableOpacity>
-              <Text style={styles.signInText}>Entrar</Text>
+              <Text style={styles.signInText}> Entrar</Text>
             </TouchableOpacity>
           </View>
   </View>
@@ -107,11 +143,16 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingVertical: 15,
   },
+  signInContainer: {
+    flexDirection: 'row',
+    
+    
+  },
   signInText: {
     color: '#000',
     fontSize: 16,
-    textAlign:'center',
-    paddingTop:10,
+    paddingTop: 5,
+    textAlign: 'center'
   },
   
 });
