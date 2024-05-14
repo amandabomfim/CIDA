@@ -6,6 +6,7 @@ import { Text, View, StyleSheet } from 'react-native';
 import CriarConta from '../screens/CriarConta';
 import PaginaInicial from '../screens/PaginaInicial';
 
+
 export type RootStackParamList = {
   PaginaInicial: undefined;
   CriarConta: { name: string };
@@ -32,6 +33,7 @@ export default function RootStack() {
             ),
           })}
         />
+      
       </Stack.Navigator>
     </NavigationContainer>
   );
