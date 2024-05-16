@@ -33,7 +33,12 @@ export default function CriarConta() {
       Alert.alert('As senhas não correspondem. Por favor, verifique.');
       return;
     }
+
+    Alert.alert('Conta criada com Sucesso!');
+    navigation.navigate('BemVindo');
   };
+
+  
 
   return (
     <View style={styles.container}>
@@ -78,16 +83,16 @@ export default function CriarConta() {
       />
     </View>
     <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.createAccountButton}>
-              <Text style={styles.createAccountButtonText}>Criar conta</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.signInContainer} >
-            <Text style={styles.signInText}>Já tem uma conta?</Text>
-            <TouchableOpacity>
-              <Text style={styles.signInText}> Entrar</Text>
-            </TouchableOpacity>
-          </View>
+      <TouchableOpacity style={styles.createAccountButton}  onPress={handleCriarConta}>
+        <Text style={styles.createAccountButtonText}>Criar uma conta</Text>
+      </TouchableOpacity>
+    </View>
+      <View style={styles.signInContainer} >
+        <Text style={styles.signInText}>Já tem uma conta?</Text>
+        <TouchableOpacity>
+          <Text style={styles.signInText}> Entrar</Text>
+        </TouchableOpacity>
+      </View>
   </View>
   );
 }
@@ -96,7 +101,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    padding: 20,
+    padding: 24,
   },
 
   headerContent: {
