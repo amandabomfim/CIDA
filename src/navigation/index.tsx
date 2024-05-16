@@ -3,13 +3,16 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Text, View, StyleSheet } from 'react-native';
 
-import CriarConta from '../screens/CriarConta';
-import PaginaInicial from '../screens/PaginaInicial';
-
+import CriarConta from '../screens/criarConta';
+import PaginaInicial from '../screens/paginaInicial';
+import BemVindo from '../screens/bemVindo'; 
+import Entrar from '../screens/entrar';
 
 export type RootStackParamList = {
   PaginaInicial: undefined;
   CriarConta: { name: string };
+  BemVindo: { name: string };
+  Entrar: { name: string };
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -33,7 +36,8 @@ export default function RootStack() {
             ),
           })}
         />
-      
+        <Stack.Screen name="BemVindo" component={BemVindo} /> 
+        <Stack.Screen name="Entrar" component={Entrar} /> 
       </Stack.Navigator>
     </NavigationContainer>
   );

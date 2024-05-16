@@ -12,7 +12,7 @@ export default function PaginaInicial() {
 
   return (
     <View style={styles.container}>
-      <ImageBackground source={require('../../assets/PlanoDeFundo.jpeg')} style={styles.header}>
+      <ImageBackground source={require('../../assets/images/PlanoDeFundo.jpeg')} style={styles.header}>
         <View style={styles.overlay} />
         <View style={styles.headerContent}>
           <Text style={styles.title}>CIDA</Text>
