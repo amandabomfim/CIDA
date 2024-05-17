@@ -4,11 +4,18 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation';
 
+import { useFonts, Poppins_400Regular } from '@expo-google-fonts/poppins';
+import AppLoading from 'expo-app-loading';
+
 type PaginaInicialScreenNavigationProps = StackNavigationProp<RootStackParamList, 'PaginaInicial'>;
 
 export default function PaginaInicial() {
   const navigation = useNavigation<PaginaInicialScreenNavigationProps>();
+  const [ fontsLoader ] = useFonts({Poppins_400Regular})
 
+  if (!fontsLoader){
+    <AppLoading/>
+  }
 
   return (
     <View style={styles.container}>
@@ -27,7 +34,7 @@ export default function PaginaInicial() {
           </View>
           <View style={styles.signInContainer} >
             <Text style={styles.signInText}>Já tem uma conta?</Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('Entrar', { name: 'Entrar' })}>
               <Text style={styles.signInText}> Entrar</Text>
             </TouchableOpacity>
           </View>
@@ -65,6 +72,7 @@ const styles = StyleSheet.create({
   tagline: {
     fontSize: 18,
     color: '#fff',
+    fontFamily:'Poppins_400Regular',
   },
   mainContent: {
     flex: 1,
@@ -101,5 +109,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 10,
     color: '#fff',
+    fontFamily:'Poppins_400Regular',
   },
 });
