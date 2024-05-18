@@ -3,16 +3,18 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Text, View, StyleSheet } from 'react-native';
 
-import CriarConta from '../screens/criarConta';
-import PaginaInicial from '../screens/paginaInicial';
-import BemVindo from '../screens/bemVindo'; 
-import Entrar from '../screens/entrar';
+import CriarConta from '../screens/CriarConta';
+import PaginaInicial from '../screens/PaginaInicial';
+import BemVindo from '../screens/BemVindo'; 
+import Entrar from '../screens/Entrar';
+import Dashboard from '../screens/Dashboard'
 
 export type RootStackParamList = {
   PaginaInicial: undefined;
   CriarConta: { name: string };
   BemVindo: { name: string };
   Entrar: { name: string };
+  Dashboard: { name: string };
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -21,23 +23,25 @@ export default function RootStack() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="PaginaInicial">
-        <Stack.Screen name="PaginaInicial" component={PaginaInicial} />
+        <Stack.Screen name="PaginaInicial" component={PaginaInicial} options={{ headerShown: false }}/>
         <Stack.Screen
           name="CriarConta"
           component={CriarConta}
           options={({ navigation }) => ({
-            headerLeft: () => (
-              <View style={styles.backButton}>
-                <Feather name="chevron-left" size={16} color="#007AFF" />
-                <Text style={styles.backButtonText} onPress={navigation.goBack}>
-                  Back
-                </Text>
-              </View>
-            ),
+            headerTitle: () => null,
+            // headerLeft: () => (
+            //   <View style={styles.backButton}>
+            //     <Feather name="chevron-left" size={16} color="#007AFF" />
+            //     <Text style={styles.backButtonText} onPress={navigation.goBack}>
+            //       Back
+            //     </Text>
+            //   </View>
+            // ),
           })}
         />
-        <Stack.Screen name="BemVindo" component={BemVindo} /> 
-        <Stack.Screen name="Entrar" component={Entrar} /> 
+        <Stack.Screen name="BemVindo" component={BemVindo} options={{ headerShown: false }}/> 
+        <Stack.Screen name="Entrar" component={Entrar} options={{headerTitle: () => null}}/> 
+        <Stack.Screen name="Dashboard" component={Dashboard} options={{headerTitle: () => null}}/> 
       </Stack.Navigator>
     </NavigationContainer>
   );

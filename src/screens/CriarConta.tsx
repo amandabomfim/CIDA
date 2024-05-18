@@ -42,54 +42,54 @@ export default function CriarConta() {
 
   return (
     <View style={styles.container}>
-    <View style={styles.headerContent}>
-          <Text style={styles.title}>CIDA</Text>
-          <Text style={styles.tagline}>Consulting Insights With Deep Analysis</Text>
-        </View>
-    <View style={styles.inputSection}>
-      <Text style = {styles.inputTittle}>Empresa ou Startup:</Text>
-      <TextInput
-        style={styles.inputField}
-        placeholder="Digite o nome da empresa ou Startup..."
-        onChangeText={setEmpresa}
-      />
-      <Text style = {styles.inputTittle}>E-mail:</Text>
-      <TextInput
-        style={styles.inputField}
-        placeholder="Digite seu E-mail..."
-        onChangeText={setEmail}
-      />
-      <Text style = {styles.inputTittle}>CNPJ:</Text>
-      <TextInput
-        style={styles.inputField}
-        placeholder="Digite seu CNPJ..."
-        onChangeText={setCnpj}
-      />
-      <Text style = {styles.inputTittle}>Senha:</Text>
-      <TextInput
-        style={styles.inputField}
-        placeholder="Digite sua senha..."
-        value={senha}
-        onChangeText={setSenha}
-        secureTextEntry={true}
-      />
-      <Text style = {styles.inputTittle}>Confirme sua senha:</Text>
-      <TextInput
-        style={styles.inputField}
-        placeholder="Digite sua senha..."
-        value={confirmarSenha}
-        onChangeText={setConfirmarSenha}
-        secureTextEntry={true}
-      />
-    </View>
-    <View style={styles.buttonContainer}>
-      <TouchableOpacity style={styles.createAccountButton}  onPress={handleCriarConta}>
-        <Text style={styles.createAccountButtonText}>Criar uma conta</Text>
-      </TouchableOpacity>
-    </View>
+      <View style={styles.headerContent}>
+        <Text style={styles.title}>CIDA</Text>
+        <Text style={styles.tagline}>Consulting Insights With Deep Analysis</Text>
+      </View>
+      <View style={styles.inputSection}>
+        <Text style = {styles.inputTittle}>Empresa ou Startup:</Text>
+        <TextInput
+          style={styles.inputField}
+          placeholder="Digite o nome da empresa ou Startup..."
+          onChangeText={setEmpresa}
+        />
+        <Text style = {styles.inputTittle}>E-mail:</Text>
+        <TextInput
+          style={styles.inputField}
+          placeholder="Digite seu E-mail..."
+          onChangeText={setEmail}
+        />
+        <Text style = {styles.inputTittle}>CNPJ:</Text>
+        <TextInput
+          style={styles.inputField}
+          placeholder="Digite seu CNPJ..."
+          onChangeText={setCnpj}
+        />
+        <Text style = {styles.inputTittle}>Senha:</Text>
+        <TextInput
+          style={styles.inputField}
+          placeholder="Digite sua senha..."
+          value={senha}
+          onChangeText={setSenha}
+          secureTextEntry={true}
+        />
+        <Text style = {styles.inputTittle}>Confirme sua senha:</Text>
+        <TextInput
+          style={styles.inputField}
+          placeholder="Digite sua senha..."
+          value={confirmarSenha}
+          onChangeText={setConfirmarSenha}
+          secureTextEntry={true}
+        />
+      </View>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.createAccountButton}  onPress={handleCriarConta}>
+          <Text style={styles.createAccountButtonText}>Criar uma conta</Text>
+        </TouchableOpacity>
+      </View>
       <View style={styles.signInContainer} >
         <Text style={styles.signInText}>Já tem uma conta?</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Entrar', { name: 'Entrar' })}>
           <Text style={styles.signInText}> Entrar</Text>
         </TouchableOpacity>
       </View>
