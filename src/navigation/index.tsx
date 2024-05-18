@@ -1,13 +1,15 @@
-import { Feather } from '@expo/vector-icons';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Text, View, StyleSheet } from 'react-native';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 
 import CriarConta from '../screens/CriarConta';
 import PaginaInicial from '../screens/PaginaInicial';
 import BemVindo from '../screens/BemVindo'; 
 import Entrar from '../screens/Entrar';
 import Dashboard from '../screens/Dashboard'
+
+
 
 export type RootStackParamList = {
   PaginaInicial: undefined;
@@ -18,6 +20,7 @@ export type RootStackParamList = {
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
+
 
 export default function RootStack() {
   return (
@@ -46,6 +49,8 @@ export default function RootStack() {
     </NavigationContainer>
   );
 }
+
+
 
 const styles = StyleSheet.create({
   backButton: {
