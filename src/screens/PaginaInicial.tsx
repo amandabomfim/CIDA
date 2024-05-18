@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
   },
   headerContent: {
     alignItems: 'center',
-    paddingTop: 180,
+    paddingTop: 250,
   },
   title: {
     fontSize: 50,
@@ -92,16 +92,17 @@ const styles = StyleSheet.create({
   },
   createAccountButtonText: {
     color: '#000',
-    fontSize: 16,
+    fontSize: 18,
     textAlign: 'center',
     paddingVertical: 15,
+    fontWeight: 'bold',
   },
   signInContainer: {
     flexDirection: 'row',
   },
   signInText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 18,
     paddingTop: 5,
   },
   mainTitle: {
