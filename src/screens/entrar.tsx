@@ -1,13 +1,13 @@
-import { RouteProp, useRoute, useNavigation} from '@react-navigation/native';
+import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
 import { useState, useEffect } from 'react';
 import { View, StyleSheet, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 
 import { RootStackParamList } from '../navigation';
 
-type EntrarSreenRouteProp = RouteProp<RootStackParamList, 'Entrar'>;
+type EntrarScreenRouteProp = RouteProp<RootStackParamList, 'Entrar'>;
 
 export default function Entrar() {
-  const router = useRoute<EntrarSreenRouteProp>();
+  const router = useRoute<EntrarScreenRouteProp>();
   const navigation = useNavigation();
 
   const [userData, setUserData] = useState({
@@ -20,14 +20,14 @@ export default function Entrar() {
   const handleLogin = async () => {
     const { email, senha } = userData;
 
-    // if (!email || !senha) {
-    //   setAlertMessage('Por favor, preencha todos os campos.');
-    //   return;
-    // }
-    // if (!/\S+@\S+\.\S+/.test(userData.email)) {
-    //   setAlertMessage("Email inválido.");
-    //   return false;
-    // }
+    if (!email || !senha) {
+      setAlertMessage('Por favor, preencha todos os campos.');
+      return;
+    }
+    if (!/\S+@\S+\.\S+/.test(userData.email)) {
+      setAlertMessage("Email inválido.");
+      return false;
+    }
 
     try {
       const response = await fetch('http://10.0.2.2/usuario/login', {
@@ -39,7 +39,7 @@ export default function Entrar() {
       });
 
       if (response.ok) {
-        navigation.navigate('Dashboard', { name: 'Dashboard' });
+        navigation.replace('Dashboard', { userData });
       } else if (response.status === 401) {
         setAlertMessage('Email ou senha inválidos');
       } else if (response.status === 500) {
@@ -61,7 +61,7 @@ export default function Entrar() {
     } catch (error) {
       setAlertMessage('Erro ao fazer login');
     }
-    navigation.navigate('Dashboard', { name: 'Dashboard' });
+    // navigation.replace('Dashboard', { userData });
   };
 
   return (
@@ -74,14 +74,14 @@ export default function Entrar() {
         <View style={styles.inputSection}>
           <Text style={styles.inputTittle}>E-mail:</Text>
           <TextInput
-            style={styles.inputField}
+            style={styles.inputField} // Complete the style property assignment
             placeholder="Digite seu e-mail..."
             value={userData.email}
             onChangeText={(text) => setUserData({ ...userData, email: text })}
           />
           <Text style={styles.inputTittle}>Senha:</Text>
           <TextInput
-            style={styles.inputField}
+            style={styles.inputField} // Complete the style property assignment
             placeholder="Digite sua senha..."
             value={userData.senha}
             onChangeText={(text) => setUserData({ ...userData, senha: text })}
@@ -89,7 +89,7 @@ export default function Entrar() {
           />
         </View>
         {alertMessage && ( // Renderização condicional do rótulo de alerta
-          <Text style={{color:'red', fontWeight:'bold'}}>{alertMessage}</Text>
+          <Text style={{ color: 'red', fontWeight: 'bold' }}>{alertMessage}</Text>
         )}
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.createAccountButton} onPress={handleLogin}>
@@ -106,7 +106,6 @@ export default function Entrar() {
     </View>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
@@ -161,21 +160,21 @@ const styles = StyleSheet.create({
     paddingTop: 5,
     textAlign: 'center'
   },
-  createTextTouchable:{
-    fontWeight:'bold',
+  createTextTouchable: {
+    fontWeight: 'bold',
     fontSize: 16,
     paddingTop: 5,
   },
   buttonContainer: {
-    alignItems:'center',
-    justifyContent:'center',
+    alignItems: 'center',
+    justifyContent: 'center',
     width: 355,
     height: 48,
     marginTop: 10,
   },
   createAccountButton: {
     backgroundColor: '#000',
-    width: '100%', 
+    width: '100%',
   },
   createAccountButtonText: {
     color: '#fff',

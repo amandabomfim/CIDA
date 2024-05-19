@@ -72,7 +72,6 @@ const styles = StyleSheet.create({
   tagline: {
     fontSize: 18,
     color: '#fff',
-    fontFamily:'Poppins_400Regular',
   },
   mainContent: {
     flex: 1,
@@ -110,6 +109,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 10,
     color: '#fff',
-    fontFamily:'Poppins_400Regular',
   },
 });

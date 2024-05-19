@@ -6,8 +6,9 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import CriarConta from '../screens/CriarConta';
 import PaginaInicial from '../screens/PaginaInicial';
 import BemVindo from '../screens/BemVindo'; 
-import Entrar from '../screens/Entrar';
-import Dashboard from '../screens/Dashboard'
+import Entrar from '../screens/entrar';
+import Dashboard from '../screens/Dashboard';
+import Upload from '../screens/Upload'
 
 
 
@@ -16,7 +17,8 @@ export type RootStackParamList = {
   CriarConta: { name: string };
   BemVindo: { name: string };
   Entrar: { name: string };
-  Dashboard: { name: string };
+  Dashboard: { userData: { email: string; password: string } };
+  Upload: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -44,7 +46,8 @@ export default function RootStack() {
         />
         <Stack.Screen name="BemVindo" component={BemVindo} options={{ headerShown: false }}/> 
         <Stack.Screen name="Entrar" component={Entrar} options={{headerTitle: () => null}}/> 
-        <Stack.Screen name="Dashboard" component={Dashboard} options={{headerTitle: () => null}}/> 
+        <Stack.Screen name="Dashboard" component={Dashboard}  options={{ headerShown: false }}/> 
+        <Stack.Screen name="Upload" component={Upload}  options={{headerTitle: () => null}}/> 
       </Stack.Navigator>
     </NavigationContainer>
   );
