@@ -102,6 +102,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     padding: 24,
+    paddingTop: 1
   },
 
   headerContent: {
@@ -112,10 +113,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10,
     color: '#000',
+    
   },
   tagline: {
     fontSize: 18,
     color: '#000',
+    fontWeight: 'bold'
   },
   inputSection: {
     paddingTop: 15,
@@ -146,12 +149,13 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     textAlign: 'center',
-    paddingVertical: 15,
+    paddingVertical: 14,
+    fontWeight: 'bold',
   },
   signInContainer: {
     flexDirection: 'row',
-    
-    
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   signInText: {
     color: '#000',
@@ -159,5 +163,5 @@ const styles = StyleSheet.create({
     paddingTop: 5,
     textAlign: 'center'
   },
-  
+ 
 });
