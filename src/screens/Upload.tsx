@@ -7,24 +7,29 @@ import * as DocumentPicker from 'expo-document-picker';
 import { RootStackParamList } from '../navigation';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { BackHandler } from 'react-native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { serverUrl } from 'utils/serverUrl';
 
-type UploadScreenRouteProp = RouteProp<RootStackParamList, "Upload">
+type UploadScreenRouteProp = RouteProp<RootStackParamList, 'Upload'>;
+type UploadScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Upload'>;
 
 export default function Upload() {
   const router = useRoute<UploadScreenRouteProp>();
   const { userData } = router.params;
   const [url, setUrl] = useState('');
-  const navigation = useNavigation();
+  const navigation = useNavigation<UploadScreenNavigationProp>();
 
   const [arquivoName, setArquivoName] = useState('');
   const [palavra, setPalavra] = useState('');
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
-  const [document, setDocument] = useState<{ uri: string; name: string; mimeType: string } | null>(null);
+  const [document, setDocument] = useState<{ uri: string; name: string; mimeType: string } | null>(
+    null
+  );
 
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        navigation.replace("Dashboard", { userData });
+        navigation.replace('Dashboard', { userData });
         return true; // Indica que o evento foi tratado
       };
 
@@ -35,56 +40,47 @@ export default function Upload() {
   );
 
   const handleSend = async () => {
-    console.log("Dentro do handleSend");
+    console.log('Dentro do handleSend');
     if (!palavra) {
-      setAlertMessage("Adicione palavras chaves.");
+      setAlertMessage('Adicione palavras chaves.');
       return;
     }
 
     if (!document) {
-      setAlertMessage("Por favor, selecione um documento.");
+      setAlertMessage('Por favor, selecione um documento.');
       return;
     }
 
     try {
-
       const id = userData.clienteId;
       // const id = userData?.clienteId;  // Verifique se o clienteId está definido
-      console.log(id)
+      console.log(id);
 
       if (id == undefined) {
-        setAlertMessage("Cliente ID não encontrado.");
+        setAlertMessage('Cliente ID não encontrado.');
         return;
       }
 
-      // Criar um FormData para enviar o arquivo e a palavra chave
-      const formData = new FormData();
-      formData.append("arquivo", {
-        uri: document.uri,
-        name: document.name,
-        type: document.mimeType,
-      } as any);  // 'as any' é necessário para evitar problemas de tipagem com FormData
-      formData.append("palavra", palavra);
-
-      const response = await fetch(
-        `http://10.0.2.2/cliente/${id}/arquivo/upload`,
-        {
-          method: "POST",
-          body: formData, // Usar FormData como corpo da requisição
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      );
+      const data = {
+        arquivo: document,
+        palavra: palavra,
+      };
+      const response = await fetch(`${serverUrl}/${id}/arquivo/upload`, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
 
       if (response.ok) {
-        navigation.replace("Dashboard", { userData });
+        navigation.replace('Dashboard', { userData });
       } else {
         const errorMessage = await response.text();
         console.log(errorMessage);
       }
     } catch (error) {
-      setAlertMessage("Erro ao fazer upload do arquivo 1");
+      setAlertMessage('Erro ao fazer upload do arquivo 1');
       console.log(error);
     }
   };
@@ -100,7 +96,7 @@ export default function Upload() {
         setDocument({
           uri: selectedFile.uri,
           name: selectedFile.name,
-          mimeType: selectedFile.mimeType,
+          mimeType: selectedFile.mimeType || 'application/pdf',
         });
       } else {
         setAlertMessage('Nenhum documento selecionado.');
@@ -137,7 +133,9 @@ export default function Upload() {
           <Card style={styles.uploadCard}>
             <TouchableOpacity style={styles.uploadBox} onPress={handleFileUpload}>
               <IconButton icon="cloud-upload" size={40} />
-              <Text>Arraste o seu arquivo ou <Text style={styles.chooseText}>Escolha</Text></Text>
+              <Text>
+                Arraste o seu arquivo ou <Text style={styles.chooseText}>Escolha</Text>
+              </Text>
             </TouchableOpacity>
           </Card>
         </View>
@@ -168,11 +166,13 @@ export default function Upload() {
         </View>
 
         <View style={styles.flexEnd}>
-          <TouchableOpacity style={styles.submitButton} onPress={() => { setAlertMessage(" "); handleSend(); }}>
-            <LinearGradient
-              colors={['#330DE9', '#200F3B']}
-              style={styles.gradient}
-            >
+          <TouchableOpacity
+            style={styles.submitButton}
+            onPress={() => {
+              setAlertMessage(' ');
+              handleSend();
+            }}>
+            <LinearGradient colors={['#330DE9', '#200F3B']} style={styles.gradient}>
               <Text style={styles.submitButtonText}>Enviar documentos</Text>
             </LinearGradient>
           </TouchableOpacity>
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: 'bold',
     paddingTop: 12,
-    textAlign: 'center'
+    textAlign: 'center',
   },
   uploadSection: {
     marginTop: 30,

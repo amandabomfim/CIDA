@@ -6,21 +6,23 @@ import { Ionicons } from '@expo/vector-icons';
 import { RootStackParamList } from '../navigation';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BackHandler } from 'react-native';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 type DashboardScreenRouteProp = RouteProp<RootStackParamList, "Dashboard">
+type DashboardScreenNavigationProp = StackNavigationProp<RootStackParamList, "Dashboard">
 
 export default function Dashboard() {
   const router = useRoute<DashboardScreenRouteProp>()
   const { userData } = router.params
 
-  const navigation = useNavigation();
+  const navigation = useNavigation<DashboardScreenNavigationProp>();
   const drawer = useRef(null);
 
   
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        navigation.navigate("PaginaInicial", {name: "PaginaInicial"});
+        navigation.navigate("PaginaInicial");
         return false; // Indica que o evento foi tratado
       };
 

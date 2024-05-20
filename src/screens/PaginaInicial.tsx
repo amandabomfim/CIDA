@@ -35,7 +35,7 @@ export default function PaginaInicial() {
           <View style={styles.signInContainer} >
             <Text style={styles.signInText}>Já tem uma conta?</Text>
             <TouchableOpacity onPress={() => navigation.navigate('Entrar', { name: 'Entrar' })}>
-              <Text style={styles.signInText}> Entrar</Text>
+              <Text style={styles.signInTextHighlight}> Entrar</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -103,6 +103,12 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     paddingTop: 5,
+  },
+  signInTextHighlight: { 
+    color: '#009fff',
+    fontSize: 18,
+    paddingTop: 5,
+    fontWeight: 'bold',
   },
   mainTitle: {
     fontSize: 20,

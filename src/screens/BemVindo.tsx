@@ -1,11 +1,15 @@
 import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { View, StyleSheet, Text, Image, TouchableOpacity } from 'react-native';
+import { RootStackParamList } from '~/navigation';
+
+type BemVindoNavigationProp = StackNavigationProp<RootStackParamList, "BemVindo">
 
 export default function BemVindo() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<BemVindoNavigationProp>();
 
   const handleContinue = () => {
-    navigation.navigate('Dashboard');
+    navigation.navigate('Dashboard', { userData: {} });
   };
 
   return (

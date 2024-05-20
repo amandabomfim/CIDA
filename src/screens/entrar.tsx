@@ -3,12 +3,15 @@ import { useState, useEffect } from 'react';
 import { View, StyleSheet, Text, TextInput, TouchableOpacity, Alert, ScrollView } from 'react-native';
 
 import { RootStackParamList } from '../navigation';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { serverUrl } from 'utils/serverUrl';
 
 type EntrarScreenRouteProp = RouteProp<RootStackParamList, 'Entrar'>;
+type EntrarScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Entrar'>;
 
 export default function Entrar() {
   const route = useRoute<EntrarScreenRouteProp>();
-  const navigation = useNavigation();
+  const navigation = useNavigation<EntrarScreenNavigationProp>();
 
   const [userData, setUserData] = useState({
     email: "",
@@ -33,7 +36,7 @@ export default function Entrar() {
     }
 
     try {
-      const response = await fetch('http://10.0.2.2/usuario/login', {
+      const response = await fetch(serverUrl + '/usuario/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -57,7 +60,8 @@ export default function Entrar() {
           clienteId,
         }));
         console.log(userData)
-        const clienteResponse = await fetch(`http://10.0.2.2/cliente/${clienteId}`, {
+        
+        const clienteResponse = await fetch(`${serverUrl}/cliente/${clienteId}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

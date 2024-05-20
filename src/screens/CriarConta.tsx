@@ -3,12 +3,15 @@ import { View, StyleSheet, Text, TextInput, TouchableOpacity, Alert, ScrollView 
 import React, { useState, useEffect } from 'react';
 import { RootStackParamList } from '../navigation';
 import { Picker } from '@react-native-picker/picker';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { serverUrl } from 'utils/serverUrl';
 
 type CriarContaSreenRouteProp = RouteProp<RootStackParamList, 'CriarConta'>;
+type CriarContaScreenNavigationProp = StackNavigationProp<RootStackParamList, 'CriarConta'>;
 
 export default function CriarConta() {
   const router = useRoute<CriarContaSreenRouteProp>();
-  const navigation = useNavigation();
+  const navigation = useNavigation<CriarContaScreenNavigationProp>();
   const [confirmarSenha, setConfirmarSenha] = useState('');
   const [selectedTipoEmpresa, setSelectedTipoEmpresa] = useState('');
 
@@ -61,7 +64,7 @@ export default function CriarConta() {
     }
 
     try {
-      const response = await fetch('http://10.0.2.2/cliente', {
+      const response = await fetch(serverUrl+'/cliente', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -79,7 +82,7 @@ export default function CriarConta() {
 
         try {
           
-          const response = await fetch('http://10.0.2.2/usuario', {
+          const response = await fetch(serverUrl+'/usuario', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
