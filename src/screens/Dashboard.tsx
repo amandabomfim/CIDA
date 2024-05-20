@@ -1,24 +1,34 @@
-import React, { useRef, useState } from 'react';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import React, { useRef, useState, useCallback } from 'react';
+import { RouteProp, useRoute, useFocusEffect } from '@react-navigation/native';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, DrawerLayoutAndroid, Button } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { RootStackParamList } from '../navigation';
 import { LinearGradient } from 'expo-linear-gradient';
+import { BackHandler } from 'react-native';
 
-type DetailsSreenRouteProp = RouteProp<RootStackParamList, "Dashboard">
+type DashboardScreenRouteProp = RouteProp<RootStackParamList, "Dashboard">
 
 export default function Dashboard() {
-  const router = useRoute<DetailsSreenRouteProp>()
+  const router = useRoute<DashboardScreenRouteProp>()
   const { userData } = router.params
 
   const navigation = useNavigation();
   const drawer = useRef(null);
-  const [drawerPosition, setDrawerPosition] = useState('left');
 
-  const changeDrawerPosition = () => {
-    setDrawerPosition(drawerPosition === 'left' ? 'right' : 'left');
-  };
+  
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        navigation.navigate("PaginaInicial", {name: "PaginaInicial"});
+        return false; // Indica que o evento foi tratado
+      };
+
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    }, [navigation])
+  );
 
   const navigationView = () => (
     <LinearGradient 
@@ -27,18 +37,18 @@ export default function Dashboard() {
     >
       <View style={styles.userContainer}>
         <Ionicons name="person" size={38} color="white" />
-        <Text style={[styles.paragraph, { color: 'white', marginLeft: 10 }]}>{router.params.userData.email}</Text>
+        <Text style={[styles.paragraph, { color: 'white', marginLeft: 10 }]}>{userData.nome}</Text>
       </View>
       <View style={styles.menuContainer}>
         <TouchableOpacity onPress={() => navigation.replace('Dashboard', { userData })}>
           <Text style={[styles.menuText]}>Dashboard</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.replace('Upload', { userData })}>
+        <TouchableOpacity onPress={() => {navigation.replace('Upload', { userData }); console.log(userData);}}>
           <Text style={[styles.menuText]}>Upload</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.logoutContainer}>
-        <TouchableOpacity style={styles.logoutButton}>
+        <TouchableOpacity style={styles.logoutButton} onPress={() => navigation.navigate('PaginaInicial', { name: 'PaginaInicial' })}>
           <Ionicons name="exit" size={38} color="white" />
           <Text style={styles.logoutText}>Sair</Text>
         </TouchableOpacity>
@@ -51,7 +61,6 @@ export default function Dashboard() {
       <DrawerLayoutAndroid
         ref={drawer}
         drawerWidth={300}
-        drawerPosition={drawerPosition}
         renderNavigationView={navigationView}
       >
         <ScrollView style={styles.container}>

@@ -1,21 +1,113 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { Card, IconButton, Button } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useNavigation } from '@react-navigation/native';
 import * as DocumentPicker from 'expo-document-picker';
+import { RootStackParamList } from '../navigation';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { BackHandler } from 'react-native';
+
+type UploadScreenRouteProp = RouteProp<RootStackParamList, "Upload">
 
 export default function Upload() {
+  const router = useRoute<UploadScreenRouteProp>();
+  const { userData } = router.params;
   const [url, setUrl] = useState('');
   const navigation = useNavigation();
 
+  const [arquivoName, setArquivoName] = useState('');
+  const [palavra, setPalavra] = useState('');
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  const [document, setDocument] = useState<{ uri: string; name: string; mimeType: string } | null>(null);
+
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        navigation.replace("Dashboard", { userData });
+        return true; // Indica que o evento foi tratado
+      };
+
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    }, [navigation])
+  );
+
+  const handleSend = async () => {
+    console.log("Dentro do handleSend");
+    if (!palavra) {
+      setAlertMessage("Adicione palavras chaves.");
+      return;
+    }
+
+    if (!document) {
+      setAlertMessage("Por favor, selecione um documento.");
+      return;
+    }
+
+    try {
+
+      const id = userData.clienteId;
+      // const id = userData?.clienteId;  // Verifique se o clienteId está definido
+      console.log(id)
+
+      if (id == undefined) {
+        setAlertMessage("Cliente ID não encontrado.");
+        return;
+      }
+
+      // Criar um FormData para enviar o arquivo e a palavra chave
+      const formData = new FormData();
+      formData.append("arquivo", {
+        uri: document.uri,
+        name: document.name,
+        type: document.mimeType,
+      } as any);  // 'as any' é necessário para evitar problemas de tipagem com FormData
+      formData.append("palavra", palavra);
+
+      const response = await fetch(
+        `http://10.0.2.2/cliente/${id}/arquivo/upload`,
+        {
+          method: "POST",
+          body: formData, // Usar FormData como corpo da requisição
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+
+      if (response.ok) {
+        navigation.replace("Dashboard", { userData });
+      } else {
+        const errorMessage = await response.text();
+        console.log(errorMessage);
+      }
+    } catch (error) {
+      setAlertMessage("Erro ao fazer upload do arquivo 1");
+      console.log(error);
+    }
+  };
+
   const handleFileUpload = async () => {
     try {
-      const document = await DocumentPicker.getDocumentAsync({ type: '*/*' });
-      console.log('Document:', document);
-      
+      const result = await DocumentPicker.getDocumentAsync({ type: '*/*' });
+      console.log('Document:', result);
+
+      if (!result.canceled) {
+        const selectedFile = result.assets[0];
+        setArquivoName(`Documento: ${selectedFile.name}`);
+        setDocument({
+          uri: selectedFile.uri,
+          name: selectedFile.name,
+          mimeType: selectedFile.mimeType,
+        });
+      } else {
+        setAlertMessage('Nenhum documento selecionado.');
+      }
     } catch (error) {
       console.log('Erro ao escolher arquivo:', error);
+      setAlertMessage('Erro ao escolher arquivo 2.');
     }
   };
 
@@ -32,42 +124,61 @@ export default function Upload() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Upload</Text>
-      <View style={styles.uploadSection}>
-        <Text style={styles.uploadTitle}>Upload de documentos</Text>
-        <Text style={styles.uploadsubtitle}>Adicione aqui o seu documento</Text>
-        <Card style={styles.uploadCard}>
-          <TouchableOpacity style={styles.uploadBox} onPress={handleFileUpload}>
-            <IconButton icon="cloud-upload" size={40} />
-            <Text>Arraste o seu arquivo ou <Text style={styles.chooseText}>Escolha</Text></Text>
+    <ScrollView>
+      <View style={styles.container}>
+        {alertMessage && ( // Renderização condicional do rótulo de alerta
+          <Text style={{ color: 'red', fontWeight: 'bold' }}>{alertMessage}</Text>
+        )}
+
+        <Text style={styles.title}>Upload</Text>
+        <View style={styles.uploadSection}>
+          <Text style={styles.uploadTitle}>Upload de documentos</Text>
+          <Text style={styles.uploadsubtitle}>Adicione aqui o seu documento</Text>
+          <Card style={styles.uploadCard}>
+            <TouchableOpacity style={styles.uploadBox} onPress={handleFileUpload}>
+              <IconButton icon="cloud-upload" size={40} />
+              <Text>Arraste o seu arquivo ou <Text style={styles.chooseText}>Escolha</Text></Text>
+            </TouchableOpacity>
+          </Card>
+        </View>
+        {arquivoName && ( // Renderização condicional do rótulo de alerta
+          <Text style={{ color: '#200F3B', fontWeight: 'bold' }}>{arquivoName}</Text>
+        )}
+
+        <Text style={styles.orText}>OU</Text>
+
+        <View style={styles.urlSection}>
+          <TextInput
+            style={styles.urlInput}
+            placeholder="https://sharefile.xyz/file.jpg"
+            value={url}
+            onChangeText={setUrl}
+          />
+          <Button onPress={handleUrlUpload}>Upload</Button>
+        </View>
+
+        <View>
+          <Text style={styles.inputPalavraTitle}>Palavra chave:</Text>
+          <TextInput
+            style={styles.inputPalavraField}
+            placeholder="Digite a palavra..."
+            value={palavra}
+            onChangeText={setPalavra}
+          />
+        </View>
+
+        <View style={styles.flexEnd}>
+          <TouchableOpacity style={styles.submitButton} onPress={() => { setAlertMessage(" "); handleSend(); }}>
+            <LinearGradient
+              colors={['#330DE9', '#200F3B']}
+              style={styles.gradient}
+            >
+              <Text style={styles.submitButtonText}>Enviar documentos</Text>
+            </LinearGradient>
           </TouchableOpacity>
-        </Card>
+        </View>
       </View>
-
-      <Text style={styles.orText}>OU</Text>
-
-      <View style={styles.urlSection}>
-        <TextInput
-          style={styles.urlInput}
-          placeholder="https://sharefile.xyz/file.jpg"
-          value={url}
-          onChangeText={setUrl}
-        />
-        <Button onPress={handleUrlUpload}>Upload</Button>
-      </View>
-
-      <View style={styles.flexEnd}>
-        <TouchableOpacity style={styles.submitButton} onPress={() => console.log('Enviar documentos')}>
-          <LinearGradient
-            colors={['#330DE9', '#200F3B']}
-            style={styles.gradient}
-          >
-            <Text style={styles.submitButtonText} onPress={() => navigation.navigate('Dashboard', { name: 'Dashboard' })}>Enviar documentos</Text>
-          </LinearGradient>
-        </TouchableOpacity>
-      </View>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -80,7 +191,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 30,
     fontWeight: 'bold',
-    paddingTop: 120,
+    paddingTop: 12,
     textAlign: 'center'
   },
   uploadSection: {
@@ -147,5 +258,17 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  inputPalavraTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginTop: 10,
+  },
+  inputPalavraField: {
+    height: 48,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    padding: 10,
+    borderRadius: 12,
   },
 });

@@ -1,6 +1,6 @@
 import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
-import { View, StyleSheet, Text, TextInput,TouchableOpacity, Alert,  ScrollView } from 'react-native';
-import React, { useState } from 'react';
+import { View, StyleSheet, Text, TextInput, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
 import { RootStackParamList } from '../navigation';
 import { Picker } from '@react-native-picker/picker';
 
@@ -11,34 +11,33 @@ export default function CriarConta() {
   const navigation = useNavigation();
   const [confirmarSenha, setConfirmarSenha] = useState('');
   const [selectedTipoEmpresa, setSelectedTipoEmpresa] = useState('');
-  
+
   const [clienteData, setClienteData] = useState({
     nome: "",
     segmento: "",
-    tipo: selectedTipoEmpresa,
-    desafios: "", 
+    tipo: "",
+    desafios: "",
     objetivos: "",
   });
 
   const [userData, setUserData] = useState({
+    nome:"",
     email: "",
     senha: "",
-    identificacao:"",
-    clienteId:"",
+    identificacao: "",
+    clienteId: "",
+    telefone: "",
   });
 
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
-  
-  
-  const handleCriarConta = async () =>  {
-    
-    const { email, senha, identificacao, clienteId } = userData;
-    const { nome, segmento, tipo, desafios, objetivos  } = clienteData;
 
-    // if (!clienteData.nome || !userData.email || !clienteData.tipo || !confirmarSenha) {
-    //   setAlertMessage('Por favor, preencha todos os campos.');
-    //   return;
-    // }
+  useEffect(() => {
+    setClienteData((prevData) => ({ ...prevData, tipo: selectedTipoEmpresa }));
+  }, [selectedTipoEmpresa]);
+
+  const handleCriarConta = async () => {
+    const { email, senha, identificacao, telefone, clienteId } = userData;
+    const { nome, segmento, tipo, desafios, objetivos } = clienteData;
 
     if (!/\S+@\S+\.\S+/.test(userData.email)) {
       setAlertMessage("Email inválido.");
@@ -71,45 +70,33 @@ export default function CriarConta() {
       });
 
       if (response.ok) {
-        const clienteResponse = await response.json(); // Aguarda a resolução da Promise e obtém o objeto retornado pela API
-        console.log('Objeto retornado pela API:', clienteResponse);
-        setUserData({ ...userData, clienteId: clienteResponse.id })
+        const clienteResponse = await response.json(); 
+        setUserData(prevUserData => ({
+          ...prevUserData,
+          clienteId: clienteResponse.id,
+          nome: clienteResponse.nome,
+        }));
 
         try {
+          
           const response = await fetch('http://10.0.2.2/usuario', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ email, senha, identificacao, clienteId }),
+            body: JSON.stringify({ email, senha, identificacao, clienteId, telefone}),
+
+
           });
-          console.log({ email, senha, identificacao, clienteId })
 
           if (response.ok) {
             navigation.replace('Dashboard', { userData });
-          } else if (response.status === 401) {
-            setAlertMessage('Email ou senha inválidos');
-          } else if (response.status === 500) {
-            setAlertMessage('Erro no servidor. Tente novamente mais tarde.');
-          } else {
-            let errorMessage = 'Erro inesperado ao fazer login';
-            try {
-              const errorData = await response.json();
-              errorMessage = errorData.message || errorMessage;
-            } catch (e) {
-              const errorText = await response.text();
-              if (errorText) {
-                errorMessage = errorText;
-              }
-            }
-            console.log(errorMessage);
-            setAlertMessage(errorMessage);
           }
         } catch (error) {
           setAlertMessage('Erro ao fazer login');
         }
-      } else if (response.status === 401) {
-        setAlertMessage('Email ou senha inválidos');
+      // } else if (response.status === 400) {
+      //   setAlertMessage('Houve um problema com os dados fornecidos.');
       } else if (response.status === 500) {
         setAlertMessage('Erro no servidor. Tente novamente mais tarde.');
       } else {
@@ -130,7 +117,7 @@ export default function CriarConta() {
       setAlertMessage('Erro ao fazer login');
     }
   };
- 
+
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -139,53 +126,59 @@ export default function CriarConta() {
           <Text style={styles.tagline}>Consulting Insights With Deep Analysis</Text>
         </View>
         <View style={styles.inputSection}>
-          <Text style = {styles.inputTittle}>Empresa ou Startup:</Text>
+          <Text style={styles.inputTittle}>Empresa ou Startup:</Text>
           <TextInput
             style={styles.inputField}
             placeholder="Digite o nome da empresa ou Startup..."
             onChangeText={(text) => setClienteData({ ...clienteData, nome: text })}
           />
-          <Text style = {styles.inputTittle}>E-mail:</Text>
+          <Text style={styles.inputTittle}>E-mail:</Text>
           <TextInput
             style={styles.inputField}
             placeholder="Digite seu E-mail..."
             onChangeText={(text) => setUserData({ ...userData, email: text })}
           />
-          <Text style = {styles.inputTittle}>Usuario:</Text>
+          <Text style={styles.inputTittle}>Telefone</Text>
+          <TextInput
+            style={styles.inputField}
+            placeholder="Digite o telefone..."
+            onChangeText={(text) => setUserData({ ...userData, telefone: text })}
+          />
+          <Text style={styles.inputTittle}>Usuario:</Text>
           <TextInput
             style={styles.inputField}
             placeholder="Digite o usuario..."
             onChangeText={(text) => setUserData({ ...userData, identificacao: text })}
           />
-          <Text style = {styles.inputTittle}>Segmento:</Text>
+          <Text style={styles.inputTittle}>Segmento:</Text>
           <TextInput
             style={styles.inputField}
             placeholder="Digite o segmento..."
             onChangeText={(text) => setClienteData({ ...clienteData, segmento: text })}
           />
           <Text style={styles.inputTittle}>Tipo:</Text>
-            <Picker
-              selectedValue={selectedTipoEmpresa}
-              onValueChange={(itemValue, itemIndex) => setSelectedTipoEmpresa(itemValue)}
-              style={styles.inputField}
-            >
-              <Picker.Item label="Selecione o tipo da empresa..." value="" />
-              <Picker.Item label="Microempresa" value="ME" />
-              <Picker.Item label="Sociedade Limitada" value="LTDA" />
-              <Picker.Item label="Sociedade Anônima" value="SA" />
-              <Picker.Item label="Empresa Individual de Responsabilidade Limitada" value="EIRELI" />
-              <Picker.Item label="Empresário Individual" value="EI" />
-              <Picker.Item label="Empresa de Pequeno Porte" value="EPP" />
-              <Picker.Item label="Microempreendedor Individual" value="MEI" />
-            </Picker>
+          <Picker
+            selectedValue={selectedTipoEmpresa}
+            onValueChange={(itemValue) => setSelectedTipoEmpresa(itemValue)}
+            style={styles.inputField}
+          >
+            <Picker.Item label="Selecione o tipo da empresa..." value="" />
+            <Picker.Item label="Microempresa" value="ME" />
+            <Picker.Item label="Sociedade Limitada" value="LTDA" />
+            <Picker.Item label="Sociedade Anônima" value="SA" />
+            <Picker.Item label="Empresa Individual de Responsabilidade Limitada" value="EIRELI" />
+            <Picker.Item label="Empresário Individual" value="EI" />
+            <Picker.Item label="Empresa de Pequeno Porte" value="EPP" />
+            <Picker.Item label="Microempreendedor Individual" value="MEI" />
+          </Picker>
 
-          <Text style = {styles.inputTittle}>Desafios:</Text>
+          <Text style={styles.inputTittle}>Desafios:</Text>
           <TextInput
             style={styles.inputField}
             placeholder="Digite desafios..."
             onChangeText={(text) => setClienteData({ ...clienteData, desafios: text })}
           />
-          <Text style = {styles.inputTittle}>Senha:</Text>
+          <Text style={styles.inputTittle}>Senha:</Text>
           <TextInput
             style={styles.inputField}
             placeholder="Digite sua senha..."
@@ -193,7 +186,7 @@ export default function CriarConta() {
             onChangeText={(text) => setUserData({ ...userData, senha: text })}
             secureTextEntry={true}
           />
-          <Text style = {styles.inputTittle}>Confirme sua senha:</Text>
+          <Text style={styles.inputTittle}>Confirme sua senha:</Text>
           <TextInput
             style={styles.inputField}
             placeholder="Digite sua senha..."
@@ -202,17 +195,20 @@ export default function CriarConta() {
             secureTextEntry={true}
           />
         </View>
-        {alertMessage && ( // Renderização condicional do rótulo de alerta
+        {alertMessage && (
           <Text style={{ color: 'red', fontWeight: 'bold' }}>{alertMessage}</Text>
         )}
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.createAccountButton}  onPress={handleCriarConta}>
+          <TouchableOpacity style={styles.createAccountButton} onPress={handleCriarConta}>
             <Text style={styles.createAccountButtonText}>Criar uma conta</Text>
           </TouchableOpacity>
         </View>
-        <View style={styles.signInContainer} >
+        <View style={styles.signInContainer}>
           <Text style={styles.signInText}>Já tem uma conta?</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Entrar', { name: 'Entrar' })}>
+          <TouchableOpacity onPress={() => {
+            setAlertMessage(' ');
+            navigation.navigate('Entrar', { name: 'Entrar' });
+          }}>
             <Text style={styles.signInText}> Entrar</Text>
           </TouchableOpacity>
         </View>
@@ -228,7 +224,6 @@ const styles = StyleSheet.create({
     padding: 24,
     paddingTop: 1
   },
-
   headerContent: {
     alignItems: 'center',
   },
@@ -237,7 +232,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10,
     color: '#000',
-    
   },
   tagline: {
     fontSize: 18,
@@ -267,7 +261,7 @@ const styles = StyleSheet.create({
   },
   createAccountButton: {
     backgroundColor: '#000',
-    width: '100%', 
+    width: '100%',
   },
   createAccountButtonText: {
     color: '#fff',
@@ -287,5 +281,5 @@ const styles = StyleSheet.create({
     paddingTop: 5,
     textAlign: 'center'
   },
- 
+
 });

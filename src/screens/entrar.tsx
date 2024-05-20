@@ -1,21 +1,24 @@
 import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
 import { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { View, StyleSheet, Text, TextInput, TouchableOpacity, Alert, ScrollView } from 'react-native';
 
 import { RootStackParamList } from '../navigation';
 
 type EntrarScreenRouteProp = RouteProp<RootStackParamList, 'Entrar'>;
 
 export default function Entrar() {
-  const router = useRoute<EntrarScreenRouteProp>();
+  const route = useRoute<EntrarScreenRouteProp>();
   const navigation = useNavigation();
 
   const [userData, setUserData] = useState({
     email: "",
     senha: "",
+    clienteId: "",
+    nome: "",
   });
 
-  const [alertMessage, setAlertMessage] = useState<string | null>(null); // Estado para a mensagem de alerta
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+
 
   const handleLogin = async () => {
     const { email, senha } = userData;
@@ -38,10 +41,44 @@ export default function Entrar() {
         body: JSON.stringify({ email, senha }),
       });
 
+      const userResponse = await response.json();
+      console.log(userResponse)
+
       if (response.ok) {
-        navigation.replace('Dashboard', { userData });
+        const clienteId = userResponse.clienteId;
+
+        if (!clienteId) {
+          setAlertMessage('ID do cliente não encontrado.');
+          return;
+        }
+
+        setUserData(prevUserData => ({
+          ...prevUserData,
+          clienteId,
+        }));
+        console.log(userData)
+        const clienteResponse = await fetch(`http://10.0.2.2/cliente/${clienteId}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        const clienteData = await clienteResponse.json();
+        console.log(clienteData)
+
+        if (clienteResponse.ok) {
+          setUserData(prevUserData => ({
+            ...prevUserData,
+            nome: clienteData.nome,
+          }));
+
+          navigation.replace('Dashboard', { userData: { ...userData, clienteId, nome: clienteData.nome } });
+        } else {
+          setAlertMessage('Erro ao obter dados do cliente.');
+        }
       } else if (response.status === 401) {
-        setAlertMessage('Email ou senha inválidos');
+        setAlertMessage('Email e/ou senha incorreto');
       } else if (response.status === 500) {
         setAlertMessage('Erro no servidor. Tente novamente mais tarde.');
       } else {
@@ -60,50 +97,52 @@ export default function Entrar() {
       }
     } catch (error) {
       setAlertMessage('Erro ao fazer login');
+      console.log(error)
     }
-    // navigation.replace('Dashboard', { userData });
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.main}>
-        <View style={styles.headerContent}>
-          <Text style={styles.title}>CIDA</Text>
-          <Text style={styles.tagline}>Consulting Insights With Deep Analysis</Text>
-        </View>
-        <View style={styles.inputSection}>
-          <Text style={styles.inputTittle}>E-mail:</Text>
-          <TextInput
-            style={styles.inputField} // Complete the style property assignment
-            placeholder="Digite seu e-mail..."
-            value={userData.email}
-            onChangeText={(text) => setUserData({ ...userData, email: text })}
-          />
-          <Text style={styles.inputTittle}>Senha:</Text>
-          <TextInput
-            style={styles.inputField} // Complete the style property assignment
-            placeholder="Digite sua senha..."
-            value={userData.senha}
-            onChangeText={(text) => setUserData({ ...userData, senha: text })}
-            secureTextEntry={true}
-          />
-        </View>
-        {alertMessage && ( // Renderização condicional do rótulo de alerta
-          <Text style={{ color: 'red', fontWeight: 'bold' }}>{alertMessage}</Text>
-        )}
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.createAccountButton} onPress={handleLogin}>
-            <Text style={styles.createAccountButtonText}>Entrar</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.createContainer}>
-          <Text style={styles.createText}>Não possui uma conta?</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('CriarConta', { name: 'CriarConta' })}>
-            <Text style={styles.createTextTouchable}> Criar Conta</Text>
-          </TouchableOpacity>
+    <ScrollView>
+      <View style={styles.container}>
+        <View style={styles.main}>
+          <View style={styles.headerContent}>
+            <Text style={styles.title}>CIDA</Text>
+            <Text style={styles.tagline}>Consulting Insights With Deep Analysis</Text>
+          </View>
+          <View style={styles.inputSection}>
+            <Text style={styles.inputTittle}>E-mail:</Text>
+            <TextInput
+              style={styles.inputField}
+              placeholder="Digite seu e-mail..."
+              value={userData.email}
+              onChangeText={(text) => setUserData({ ...userData, email: text })}
+            />
+            <Text style={styles.inputTittle}>Senha:</Text>
+            <TextInput
+              style={styles.inputField}
+              placeholder="Digite sua senha..."
+              value={userData.senha}
+              onChangeText={(text) => setUserData({ ...userData, senha: text })}
+              secureTextEntry={true}
+            />
+          </View>
+          {alertMessage && (
+            <Text style={{ color: 'red', fontWeight: 'bold' }}>{alertMessage}</Text>
+          )}
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.createAccountButton} onPress={handleLogin}>
+              <Text style={styles.createAccountButtonText}>Entrar</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.createContainer}>
+            <Text style={styles.createText}>Não possui uma conta?</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('CriarConta', { name: 'CriarConta' })}>
+              <Text style={styles.createTextTouchable}> Criar Conta</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -129,12 +168,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#000',
   },
-  subtitle: {
-    fontSize: 36,
-    color: '#38434D',
-  },
   inputSection: {
-    // backgroundColor:'blue',
     paddingTop: 15,
     marginTop: 100,
   },
@@ -158,7 +192,7 @@ const styles = StyleSheet.create({
     color: '#000',
     fontSize: 16,
     paddingTop: 5,
-    textAlign: 'center'
+    textAlign: 'center',
   },
   createTextTouchable: {
     fontWeight: 'bold',
